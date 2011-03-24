@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+
+require_relative '../lib/s_compare'
+
+begin
+  if ARGV.length == 2
+    code1 = File.open(ARGV[0]).read
+    code2 = File.open(ARGV[1]).read
+    if SCompare::Comparator.same_structure?(code1, code2)
+      puts "Both files have the same structure."
+    else
+      puts "Structure is different."
+    end
+  else
+    puts "USAGE:  scompare file1.rb file2.rb"
+  end
+end

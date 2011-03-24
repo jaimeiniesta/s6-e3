@@ -1,102 +1,66 @@
 # RMU SESSION 6 EXERCISE 3
 
-If in doubt about how to submit, see SUBMISSION_GUIDELINES file.
+This is my experiment to explore the Ripper library.
 
-In this exercise, we'll be exploring Ripper, an arcane and 
-mostly undocumented tool in Ruby 1.9's standard library which 
-could eventually be used for very interesting thing. Ripper is an
-s-expression based Ruby parser that lets you parse Ruby into an
-abstract syntax tree which can then be inspected and manipulated. 
+It's a ruby file comparator, a tool that given 2 ruby files, it will tell if they have the same structure. For example:
 
-    >> require "ripper"
-    => true
-    >> Ripper::SexpBuilder.new("1 + 1").parse
-    => [:program, [:stmts_add, [:stmts_new], 
-         [:binary, [:@int, "1", [1, 0]], :+, [:@int, "1", [1, 4]]]]]
+*File 1*
 
-Being able to reduce Ruby syntax to raw data in this manner is
-powerful, because it makes it possible to analyze the structure
-of Ruby programs in ways that would be cumbersome or impossible
-at runtime. Combined with a good tool that converts these 
-s-expressions back into Ruby code, it would be possible to 
-perform AST manipulations in which Ruby syntax is parsed, 
-manipulated, reassembled, and then evaluated. 
+  class Person
+    def initialize(name)
+      @name = name
+    end
 
-Unforunately, neither of the tools I've tried for converting 
-Ripper style s-expressions back to Ruby have worked with much
-success. I have been unable to successfully make use of 
-Ripper2Ruby <https://github.com/svenfuchs/ripper2ruby> for all
-but the most trivial cases, and Jim Weirich's Sorcerer project
-<https://github.com/jimweirich/sorcerer> seems promising but 
-looks to be little more than a short term experiment and 
-leaves many hooks unimplemented.
+    def first_name
+      @name.split(" ")[0]
+    end
 
-Still, I remain convinced that given enough eyes, we'll be able
-to find some interesting uses for Ripper, whether or not we use
-it to convert s-expression back into Ruby. There is a lot of
-potential for simply building tools that analyze codebases,
-and even more room for learning a thing or two about the way
-Ruby's syntax operates at a low level just for the learning 
-experience.
+    def last_name
+      @name.split(" ")[1]
+    end
+  end
 
-Thus, your task for this assignment is to explore Ripper, conduct
-an interesting experiment, and report back on your findings. The
-exact nature of your experiment is for you to decide, but please
-follow the guidelines listed below.
+*File 2*
 
-## GUIDELINES
+  # A comment that will be ignored
+  # by the parser.
+  # This file is similar in structure to code1a.rb
+  class Guy
+    def initialize(his_name)
+      @his_name       = his_name
+    end
 
-* Ripper is an undocumented library with very few resources
-  available online describing how to make use of it. With that in
-  mind, it's important that as a group you take good notes and
-  share them, and also share any resources you do find as you
-  explore the topic.
+    def his_first_name
 
-* Your experiment should not just be to research Ripper, but
-  instead to try to come up with a small practical application
-  that uses it. This application is not expected to be fully
-  reliable or feature complete, but it should show potential
-  for using Ripper in an area where some other solution wouldn't
-  be immediately obvious.
+      @his_name.split(" ")[0] # this comment is also ignored
 
-* You should make sure to share your ideas on the mailing list
-  and via university-web to avoid duplicate efforts. You are
-  encouraged to help each other as much as possible and share
-  bits of common code and documentation, but everyone who attempts
-  this assignment needs to submit an experiment of their own
-  creation.
+    end
 
-* Make good use of irb and Ruby's reflective and introspective
-  features to explore Ripper's internals.
+    def his_last_name
 
-* Review ripper_sample.rb in this repository for a trivial example 
-  of using Ripper+Sorcerer.
+      @his_name.split(" ")[1] # and so is this one
 
-* Read up on ParseTree, RubyParser, and Ruby2Ruby 
-  (all third party Ruby 1.8 tools) for inspiration and ideas of
-  what might apply to Ripper.
+    end
+  end
 
-* Feel free to use external resources such as the ruby-talk
-  and ruby-core mailing lists, but include a link back to the
-  public archives of any conversations you have outside of
-  RMU so that your fellow students can learn from them.
+These 2 ruby files may look different but they're really the same code, naming things differently, and with different indentation and comments.
 
-## IDEAS
+When reducing to its simple structure, we can see they are really the same:
 
-* Try to patch Ripper2Ruby or Sorcerer and improve it in some way
+  [:program, :stmts_add, :stmts_new, :class, :const_ref, :@const, "string", 1, 1, nil, :bodystmt, :stmts_add, :stmts_add, :stmts_add, :stmts_new, :def, :@ident, "string", 1, 1, :paren, :params, :@ident, "string", 1, 1, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :assign, :var_field, :@ivar, "string", 1, 1, :var_ref, :@ident, "string", 1, 1, nil, nil, nil, :def, :@ident, "string", 1, 1, :params, nil, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :aref, :method_add_arg, :call, :var_ref, :@ivar, "string", 1, 1, :".", :@ident, "string", 1, 1, :arg_paren, :args_add_block, :args_add, :args_new, :string_literal, :string_add, :string_content, :@tstring_content, "string", 1, 1, false, :args_add_block, :args_add, :args_new, :@int, "string", 1, 1, false, nil, nil, nil, :def, :@ident, "string", 1, 1, :params, nil, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :aref, :method_add_arg, :call, :var_ref, :@ivar, "string", 1, 1, :".", :@ident, "string", 1, 1, :arg_paren, :args_add_block, :args_add, :args_new, :string_literal, :string_add, :string_content, :@tstring_content, "string", 1, 1, false, :args_add_block, :args_add, :args_new, :@int, "string", 1, 1, false, nil, nil, nil, nil, nil, nil]
 
-* Try to make an analytics tool that provides certain metrics about
-  your code (e.g local variables per method, number of references to
-  a given instance variable, etc)
+  [:program, :stmts_add, :stmts_new, :class, :const_ref, :@const, "string", 1, 1, nil, :bodystmt, :stmts_add, :stmts_add, :stmts_add, :stmts_new, :def, :@ident, "string", 1, 1, :paren, :params, :@ident, "string", 1, 1, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :assign, :var_field, :@ivar, "string", 1, 1, :var_ref, :@ident, "string", 1, 1, nil, nil, nil, :def, :@ident, "string", 1, 1, :params, nil, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :aref, :method_add_arg, :call, :var_ref, :@ivar, "string", 1, 1, :".", :@ident, "string", 1, 1, :arg_paren, :args_add_block, :args_add, :args_new, :string_literal, :string_add, :string_content, :@tstring_content, "string", 1, 1, false, :args_add_block, :args_add, :args_new, :@int, "string", 1, 1, false, nil, nil, nil, :def, :@ident, "string", 1, 1, :params, nil, nil, nil, nil, nil, :bodystmt, :stmts_add, :stmts_new, :aref, :method_add_arg, :call, :var_ref, :@ivar, "string", 1, 1, :".", :@ident, "string", 1, 1, :arg_paren, :args_add_block, :args_add, :args_new, :string_literal, :string_add, :string_content, :@tstring_content, "string", 1, 1, false, :args_add_block, :args_add, :args_new, :@int, "string", 1, 1, false, nil, nil, nil, nil, nil, nil]
 
-* Try to make your own emitter that converts s-expressions to Ruby
-  or some other language. Dealing with a restricted subset is fine.
+= Usage
 
-* Build a nice trace output showing when variables are set, methods
-  called, etc.
+  ./bin/scompare file1.rb file2.rb
 
-## QUESTIONS?
+= Examples
 
-Hit up the mailing list or IRC. RMU exercises are left deliberately open ended,
-and often benefit from some discussion before, during, and after you work on
-them.
+The following will tell the files have the same structure
+
+  ./bin/scompare spec/samples/code1a.rb spec/samples/code1b.rb
+
+But these ones will tell you they're different as the second file introduces a new method:
+
+  ./bin/scompare spec/samples/code1a.rb spec/samples/code1c.rb
