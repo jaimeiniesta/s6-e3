@@ -1,10 +1,10 @@
-# RMU SESSION 6 EXERCISE 3
+= RMU SESSION 6 EXERCISE 3
 
 This is my experiment to explore the Ripper library.
 
-It's a ruby file comparator, a tool that given 2 ruby files, it will tell if they have the same structure. For example:
+It's a Ruby file comparator, a tool that given 2 Ruby files, it will tell if they have the same structure. For example:
 
-*File 1*
+File 1
 
   class Person
     def initialize(name)
@@ -20,7 +20,7 @@ It's a ruby file comparator, a tool that given 2 ruby files, it will tell if the
     end
   end
 
-*File 2*
+File 2
 
   # A comment that will be ignored
   # by the parser.
@@ -43,7 +43,7 @@ It's a ruby file comparator, a tool that given 2 ruby files, it will tell if the
     end
   end
 
-These 2 ruby files may look different but they're really the same code, naming things differently, and with different indentation and comments.
+These 2 Ruby files may look different but they're really the same code, naming things differently, and with different indentation and comments.
 
 When reducing to its simple structure, we can see they are really the same:
 
