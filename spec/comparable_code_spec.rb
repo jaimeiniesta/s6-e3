@@ -32,31 +32,31 @@ describe SCompare::ComparableCode do
   context "Code simplification" do
     it "should simplify all strings" do
       code     = "['hello', 'world']"
-      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_new], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]]]]]
+      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_new], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplified_value, :simplified_coordinates]]]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplified_value, :simplified_coordinates]]]]]]]
       SCompare::ComparableCode.new(code).simplified_code.should == expected
     end
 
     it "should simplify all fixnums" do
-      code      = "[1,2,3,100]"
-      expected  = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_add, [:args_new], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]]]
+      code     = "[1,2,3,100]"
+      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_add, [:args_new], [:@int, :simplified_value, :simplified_coordinates]], [:@int, :simplified_value, :simplified_coordinates]], [:@int, :simplified_value, :simplified_coordinates]], [:@int, :simplified_value, :simplified_coordinates]]]]]
       SCompare::ComparableCode.new(code).simplified_code.should == expected
     end
 
-    it "should leave unchanges symbols" do
-      code      = "[:a, :b, :c]"
-      expected  = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:symbol_literal, [:symbol, [:@ident, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:symbol_literal, [:symbol, [:@ident, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:symbol_literal, [:symbol, [:@ident, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]]]]]
+    it "should leave symbols unchanged" do
+      code     = "[:a, :b, :c]"
+      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:symbol_literal, [:symbol, [:@ident, :simplified_value, :simplified_coordinates]]]], [:symbol_literal, [:symbol, [:@ident, :simplified_value, :simplified_coordinates]]]], [:symbol_literal, [:symbol, [:@ident, :simplified_value, :simplified_coordinates]]]]]]]
       SCompare::ComparableCode.new(code).simplified_code.should == expected
     end
 
     it "should simplify an array with strings, fixnums and symbols" do
-      code      = "['Jaime', :is, 38]"
-      expected  = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:symbol_literal, [:symbol, [:@ident, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]]]
+      code     = "['Jaime', :is, 38]"
+      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplified_value, :simplified_coordinates]]]], [:symbol_literal, [:symbol, [:@ident, :simplified_value, :simplified_coordinates]]]], [:@int, :simplified_value, :simplified_coordinates]]]]]
       SCompare::ComparableCode.new(code).simplified_code.should == expected
     end
 
     it "should simplify nested arrays recursively" do
-      code      = "[38, 'elephants', [:work, 'together', [2,3]]]"
-      expected  = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:symbol_literal, [:symbol, [:@ident, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]], [:array, [:args_add, [:args_add, [:args_new], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]], [:@int, :simplifies_to_string, [:simplifies_to_numeric, :simplifies_to_numeric]]]]]]]]]]
+      code     = "[38, 'elephants', [:work, 'together', [2,3]]]"
+      expected = [:program, [:stmts_add, [:stmts_new], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:@int, :simplified_value, :simplified_coordinates]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplified_value, :simplified_coordinates]]]], [:array, [:args_add, [:args_add, [:args_add, [:args_new], [:symbol_literal, [:symbol, [:@ident, :simplified_value, :simplified_coordinates]]]], [:string_literal, [:string_add, [:string_content], [:@tstring_content, :simplified_value, :simplified_coordinates]]]], [:array, [:args_add, [:args_add, [:args_new], [:@int, :simplified_value, :simplified_coordinates]], [:@int, :simplified_value, :simplified_coordinates]]]]]]]]]
       SCompare::ComparableCode.new(code).simplified_code.should == expected
     end
   end

@@ -45,15 +45,26 @@ module SCompare
 
     ##
     # Provides a replacement for an element based on its class
-    # strings and fixnums will be replaced by corresponding symbols
+    # strings and fixnums will be replaced by a symbol
     # and arrays will be recursively replaced
     # Other kind of elements will remain untouched
     def replacement(elem)
       case elem.class.to_s
-      when 'String' then :simplifies_to_string
-      when 'Fixnum' then :simplifies_to_numeric
-      when 'Array' then simplify(elem)
+      when 'String' then :simplified_value
+      when 'Array' then intercept_coordinates(elem)
       else elem
+      end
+    end
+
+    ##
+    # If an elem is an array with two fixnums, it looks like s-expression
+    # coordinates and it's replaced by its symbol. If not, a recursive
+    # simplification is called for this element
+    def intercept_coordinates(elem)
+      if (elem.length == 2 && elem[0].kind_of?(Fixnum) && elem[1].kind_of?(Fixnum))
+        :simplified_coordinates
+      else
+        simplify(elem)
       end
     end
   end
