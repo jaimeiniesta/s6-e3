@@ -20,8 +20,8 @@ module SCompare
 
     def replacement(elem)
       case elem.class.to_s
-      when 'String' then 'string'
-      when 'Fixnum' then 1
+      when 'String' then :simplifies_to_string
+      when 'Fixnum' then :simplifies_to_numeric
       when 'Array' then SCompare::Simplifier.simplify(elem)
       else elem
       end
