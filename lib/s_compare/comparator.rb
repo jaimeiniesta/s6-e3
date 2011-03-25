@@ -12,8 +12,8 @@ module SCompare
 
     # Compares 2 codes, parsing and simplifying its structure
     def same_structure?(code_a, code_b)
-      simple_a = SCompare::Simplifier.simplify(structure(code_a))
-      simple_b = SCompare::Simplifier.simplify(structure(code_b))
+      simple_a = Simplifier.simplify(structure(code_a))
+      simple_b = Simplifier.simplify(structure(code_b))
 
       simple_a == simple_b
     end

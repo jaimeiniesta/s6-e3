@@ -22,7 +22,7 @@ module SCompare
       case elem.class.to_s
       when 'String' then :simplifies_to_string
       when 'Fixnum' then :simplifies_to_numeric
-      when 'Array' then SCompare::Simplifier.simplify(elem)
+      when 'Array' then simplify(elem)
       else elem
       end
     end
