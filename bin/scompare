@@ -7,7 +7,10 @@ begin
   if ARGV.length == 2
     code1 = File.open(ARGV[0]).read
     code2 = File.open(ARGV[1]).read
-    if SCompare::Comparator.same_structure?(code1, code2)
+    comparable1 = SCompare::ComparableCode.new(code1)
+    comparable2 = SCompare::ComparableCode.new(code2)
+
+    if comparable1 == comparable2
       puts "Both files have the same structure."
     else
       puts "Structure is different."
