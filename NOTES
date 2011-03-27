@@ -1,20 +1,44 @@
-I've pushed a major refactoring that now combines it all in a single class and implements the equality comparison. Now it feels all much clearer to use:
+I've pushed a major refactoring that now combines it all in a single class and
+implements the equality comparison. Now it feels all much clearer to use:
 
-SCompare::ComparableCode.new("def Person; end") == SCompare::ComparableCode.new("def Guy; end")
+  SCompare::ComparableCode.new("def Person; end") == SCompare::ComparableCode.new("def Guy; end")
+
 You can find it on the master branch of https://github.com/jaimeiniesta/s6-e3
 
-I too feel skeptical that this can work for real as there are lots of corner cases, but it has been an interesting experiment to conduct.
+I too feel skeptical that this can work for real as there are lots of corner
+cases, but it has been an interesting experiment to conduct.
 
-As for the "x = 1" VS "x = 2" example, I haven't been able to come up with a solution to it after working in it for a while, but I do have discovered more interesting things about ripper on the way.
+As for the "x = 1" VS "x = 2" example, I haven't been able to come up with a
+solution to it after working in it for a while, but I do have discovered more
+interesting things about ripper on the way.
 
-The reason I did this fixnum replace wasn't really to get rid of numeric values, but to get rid of coordinate pairs [line, col] that populate the nested array that you get when you parse the code with SexpBuilder. Differences in code indentation will produce different coordinates so in order to compare, you have to simplify. My first approach was too drastic, it just replaced all fixnums, so [10,15] would be simplified to [:simplifies_to_int, :simplifies_to_int]. But on the way you would get all fixnums on the code simplified as well.
+The reason I did this fixnum replace wasn't really to get rid of numeric values,
+but to get rid of coordinate pairs [line, col] that populate the nested array
+that you get when you parse the code with SexpBuilder. Differences in code
+indentation will produce different coordinates so in order to compare, you have
+to simplify. My first approach was too drastic, it just replaced all fixnums, so
+[10,15] would be simplified to [:simplifies_to_int, :simplifies_to_int]. But on
+the way you would get all fixnums on the code simplified as well.
 
-What I did as a sub-experiment apart on the branch https://github.com/jaimeiniesta/s6-e3/tree/recaraba is detect these coordinate pairs when doing the recursive simplification. If an element is an array and has the [line, col] format, it will be simplified to :simplified_coordinates and if not, it will be recursively simplified.
+What I did as a sub-experiment apart on the branch
+https://github.com/jaimeiniesta/s6-e3/tree/recaraba is detect these coordinate
+pairs when doing the recursive simplification. If an element is an array and has
+the [line, col] format, it will be simplified to :simplified_coordinates and if
+not, it will be recursively simplified.
 
-I thought this would respect all other fixnums and so we could prove that "x = 1" != "x = 2", but it still didn't work. Further investigations made me learn that SexpBuilder will convert fixnums to an element like [@int, "2"], that is, it stores it as a string... which will be simplified by our string simplifier.
+I thought this would respect all other fixnums and so we could prove that "x =
+1" != "x = 2", but it still didn't work. Further investigations made me learn
+that SexpBuilder will convert fixnums to an element like [@int, "2"], that is,
+it stores it as a string... which will be simplified by our string simplifier.
 
-Detecting these details would need to inspect the nested array more deeply, but I think that's outside the scope of this simple experiment.
+Detecting these details would need to inspect the nested array more deeply, but
+I think that's outside the scope of this simple experiment.
 
-Other corner cases are code that has the same methods defined in different order, that would need some mechanism to put a standard order on the parsed codes; and doing also symbol simplification respecting the symbols of the parser, etc.
+Other corner cases are code that has the same methods defined in different
+order, that would need some mechanism to put a standard order on the parsed
+codes; and doing also symbol simplification respecting the symbols of the
+parser, etc.
 
-I'm leaving both branches on github by now as I want you to be able to compare the two approaches. I think that the one that does the coordinate simplification is better.
+I'm leaving both branches on github by now as I want you to be able to compare
+the two approaches. I think that the one that does the coordinate simplification
+is better.
